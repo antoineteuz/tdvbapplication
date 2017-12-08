@@ -7,6 +7,10 @@ Application to consult tdvb series
 - [Description](#description)
   - [Fonctionnalités attendues](#fonctionnalités-attendues)
   - [Attentes spécifiques](#attentes-spécifiques)
+    - [Version Android](#version-android)
+    - [Organisation](#organisation)
+    - [Expérience utilisateur](#expérience-utilisateur)
+    - [Livrables](#livrables)
   - [API](#api)
 
 ## Participants
@@ -17,7 +21,7 @@ Application to consult tdvb series
 Application mobile Android qui s’appuiera sur l’API du service TheTVDB.com.
 Cette application implémentera les méthodes proposées par cette API et proposera une ergonomie simple d’utilisation.
 
-### Fonctionnalités
+### Fonctionnalités attendues
 
 Voici les fonctionnalités principales attendues au sein de l’application :
 - Se connecter / Se déconnecter : Attention la connexion nécessite la création au
@@ -44,21 +48,27 @@ Fonctionnalité bonus
 
 ### Attentes spécifiques
 
-Version d’Android
+#### Version d’Android
+
 API 19 minimum
-Organisation
+
+#### Organisation
+
 - Architecture MVC
 - Organisation en packages de vos classes
 - Stockage des données via une base de données SQLite
 - Le nom des classes et attributs exclusivement en Anglais
 - Utilisation cohérente de Styles, Strings et Colors
 - Internationalisation
-Expérience utilisateur
+
+#### Expérience utilisateur
+
 - Utilisation de fragments et d’Activity
 - Une expérience utilisateur simple et intuitive
-Livrables
+
+#### Livrables
+
 - Codes sources
-- Accès au repository GIT dès le début de projet: vathenbala@digipolitan.com
 - APK pour mobile
 
 ### API
