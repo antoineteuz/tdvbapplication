@@ -23,6 +23,9 @@ import rx.Observable;
 
 public interface IRFApiService {
 
+    @POST("/login")
+    Observable<Response<LoginResponse>> login(@Body Credentials credentials);
+
     @GET("/user")
     Observable<Response<UserResponse>> getUser();
 
