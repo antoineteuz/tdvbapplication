@@ -9,14 +9,8 @@ import com.android.mytdvbapp.mytdvbapplication.helper.Constants;
 public class Credentials {
 
     private String apiKey;
-    private String email;
-    private String password;
-
-    public Credentials(String email, String password) {
-        this.apiKey = Constants.API_KEY;
-        this.email = email;
-        this.password = password;
-    }
+    private String username;
+    private String userkey;
 
     public String getApiKey() {
         return apiKey;
@@ -26,47 +20,34 @@ public class Credentials {
         this.apiKey = apiKey;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserkey() {
+        return userkey;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserkey(String userkey) {
+        this.userkey = userkey;
+    }
+
+    public Credentials(String apiKey, String username, String userkey) {
+        this.apiKey = apiKey;
+        this.username = username;
+        this.userkey = userkey;
     }
 
     @Override
     public String toString() {
         return "Credentials{" +
-                "api key='" + apiKey + '\'' +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                "apiKey='" + apiKey + '\'' +
+                ", username='" + username + '\'' +
+                ", userkey='" + userkey + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Credentials that = (Credentials) o;
-
-        if (!email.equals(that.email)) return false;
-        return password.equals(that.password);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = email.hashCode();
-        result = 31 * result + password.hashCode();
-        return result;
     }
 }

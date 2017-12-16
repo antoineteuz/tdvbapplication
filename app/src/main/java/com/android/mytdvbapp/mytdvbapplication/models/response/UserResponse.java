@@ -1,5 +1,6 @@
-package com.android.mytdvbapp.mytdvbapplication.models;
+package com.android.mytdvbapp.mytdvbapplication.models.response;
 
+import com.android.mytdvbapp.mytdvbapplication.models.UserInfo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

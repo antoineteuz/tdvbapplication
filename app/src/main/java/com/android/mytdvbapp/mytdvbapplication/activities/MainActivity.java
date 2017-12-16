@@ -1,10 +1,11 @@
-package com.android.mytdvbapp.mytdvbapplication;
+package com.android.mytdvbapp.mytdvbapplication.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
 
 public class MainActivity extends AbstractActivity {

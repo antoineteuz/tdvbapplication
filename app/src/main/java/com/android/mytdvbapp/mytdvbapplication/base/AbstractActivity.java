@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.android.mytdvbapp.mytdvbapplication.AccountActivity;
+import com.android.mytdvbapp.mytdvbapplication.activities.AccountActivity;
 import com.android.mytdvbapp.mytdvbapplication.R;
 
 /**

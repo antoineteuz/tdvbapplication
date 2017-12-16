@@ -1,8 +1,9 @@
-package com.android.mytdvbapp.mytdvbapplication.network;
+package com.android.mytdvbapp.mytdvbapplication.network.series;
 
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
-import com.android.mytdvbapp.mytdvbapplication.models.SeriesUpdatedResponse;
-import com.android.mytdvbapp.mytdvbapplication.models.UserResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.SeriesUpdatedResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.UserResponse;
 
 import java.util.HashMap;
 
@@ -15,9 +16,7 @@ import rx.Subscriber;
 
 public interface INetworkService {
 
-    void login(Credentials credentials, Subscriber<Response<UserResponse>> subscriber);
-
-    void getUser(String token, Subscriber<Response<UserResponse>> subscriber);
+    void getUser(Subscriber<Response<UserResponse>> subscriber);
 
     void getLastSeriesUpdated(HashMap<String, String> headers, String fromTime, String toTime, Subscriber<Response<SeriesUpdatedResponse>> subscriber);
 
