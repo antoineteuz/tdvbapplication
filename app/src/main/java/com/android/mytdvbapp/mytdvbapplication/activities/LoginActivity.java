@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private Credentials mCredentials;
     private Session session;
     private ServiceManager serviceManager;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +52,18 @@ public class LoginActivity extends AppCompatActivity {
         //
         ButterKnife.bind(this);
         //
+        initViews();
         initDatas();
         //
         initListeners();
+    }
+
+    private void initViews() {
+        progressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.progress_dialog)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .build();
     }
 
     private void initDatas() {
@@ -85,19 +96,24 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(final View view) {
                 if (verifyEditText(mApikey)) {
                     mCredentials = new Credentials(mApikey.getText().toString(), mUsername.getText().toString(), mUserkey.getText().toString());
+
+                    progressDialog.show();
                     serviceManager.login(mCredentials, new Subscriber<Response<LoginResponse>>() {
                         @Override
                         public void onCompleted() {
+                            progressDialog.dismiss();
                             Log.d(TAG, "login - onCompleted");
                         }
 
                         @Override
                         public void onError(Throwable e) {
+                            progressDialog.dismiss();
                             Log.d(TAG, "login - onError");
                         }
 
                         @Override
                         public void onNext(Response<LoginResponse> response) {
+                            progressDialog.dismiss();
                             Log.d(TAG, "login - onNext");
                             if (response.isSuccessful()) {
                                 if (response.body().getToken() != null && !TextUtils.isEmpty(response.body().getToken())) {

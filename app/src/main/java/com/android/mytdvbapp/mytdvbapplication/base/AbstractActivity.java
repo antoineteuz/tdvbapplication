@@ -15,10 +15,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.mytdvbapp.mytdvbapplication.activities.AccountActivity;
 import com.android.mytdvbapp.mytdvbapplication.R;
-
-import butterknife.ButterKnife;
 
 /**
  * Created by antoinepelletier on 04/12/2017.
@@ -34,6 +33,8 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
     private ActionBarDrawerToggle mDrawerToggle;
     private Menu drawerMenu;
     private ImageView mImgAccount;
+
+    public MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,12 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
         mImgAccount = header.findViewById(R.id.img_account);
 
         initListeners();
+
+        progressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.progress_dialog)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .build();
     }
 
     private void initListeners() {

@@ -5,4 +5,6 @@
 
     <string name="list_last_series">Last series updated</string>
     <string name="list_no_series_recently_updated">No series updated recently</string>
+    <string name="progress_dialog">Progress dialog</string>
+    <string name="please_wait">Please wait</string>
 </resources>

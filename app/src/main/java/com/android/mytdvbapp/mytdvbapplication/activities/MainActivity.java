@@ -73,19 +73,26 @@ public class MainActivity extends AbstractActivity {
         // TODO : Valeurs pour tester -> de 23H59 à 00H00 pas de séries update
         String fromTime = "1513382455";
         String toTime = String.valueOf(getToTime());
+
+        // TODO : launch progress dialog
+
+        progressDialog.show();
         serviceManager.getLastSeriesUpdated(buildHeaders(), fromTime, toTime, new Subscriber<Response<SeriesUpdatedResponse>>() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "last series updated - onCompleted");
+                progressDialog.dismiss();
             }
 
             @Override
             public void onError(Throwable e) {
+                progressDialog.dismiss();
                 //TODO : Gérer erreur
             }
 
             @Override
             public void onNext(Response<SeriesUpdatedResponse> response) {
+                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     if (response.body().getData() != null && response.body().getData().size() > 0) {
                         series = response.body().getData();

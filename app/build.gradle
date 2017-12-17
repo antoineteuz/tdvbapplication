@@ -52,4 +52,7 @@ dependencies {
     //Joda Time
     compile 'net.danlew:android.joda:2.9.5.1'
 
+    //for custom progress dialog
+    compile 'com.afollestad.material-dialogs:core:0.9.6.0'
+
 }
