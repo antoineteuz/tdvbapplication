@@ -2,6 +2,9 @@ package com.android.mytdvbapp.mytdvbapplication.network;
 
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
 import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedActorsResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedResponse;
+import com.android.mytdvbapp.mytdvbapplication.models.response.SeriesDetailedEpisodeResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SeriesUpdatedResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.UserResponse;
 
@@ -75,5 +78,23 @@ public class ServiceManager implements INetworkService {
     public void getLastSeriesUpdated(HashMap<String, String> headers, String fromTime, String toTime, Subscriber<Response<SeriesUpdatedResponse>> subscriber) {
         IRFApiService service = mRetrofit.create(IRFApiService.class);
         addObservable(service.getLastSeriesUpdated(headers, fromTime, toTime), subscriber);
+    }
+
+    @Override
+    public void getDetailsSerie(HashMap<String, String> headers, String id, Subscriber<Response<SerieDetailedResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.getDetailsSerie(headers, id), subscriber);
+    }
+
+    @Override
+    public void getActorsSerie(HashMap<String, String> headers, String id, Subscriber<Response<SerieDetailedActorsResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.getActorsSerie(headers, id), subscriber);
+    }
+
+    @Override
+    public void getEpisodesSerie(HashMap<String, String> headers, String id, Subscriber<Response<SeriesDetailedEpisodeResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.getEpisodesSerie(headers, id), subscriber);
     }
 }
