@@ -1,4 +1,4 @@
-package com.android.mytdvbapp.mytdvbapplication.network.series;
+package com.android.mytdvbapp.mytdvbapplication.network;
 
 
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
@@ -27,7 +27,7 @@ public interface IRFApiService {
     Observable<Response<LoginResponse>> login(@Body Credentials credentials);
 
     @GET("/user")
-    Observable<Response<UserResponse>> getUser();
+    Observable<Response<UserResponse>> getUser(@Header("Authorization") String token);
 
     @GET("/updated/query")
     Observable<Response<SeriesUpdatedResponse>> getLastSeriesUpdated(@HeaderMap HashMap<String, String> headers,

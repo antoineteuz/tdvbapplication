@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
@@ -16,7 +15,7 @@ import com.android.mytdvbapp.mytdvbapplication.models.Session;
 import com.android.mytdvbapp.mytdvbapplication.models.SessionToken;
 import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
-import com.android.mytdvbapp.mytdvbapplication.network.auth.AuthService;
+import com.android.mytdvbapp.mytdvbapplication.network.ServiceManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,9 +39,9 @@ public class LoginActivity extends AppCompatActivity {
     Button mBtnConnexion;
 
 
-    private AuthService mAuthSerice;
     private Credentials mCredentials;
     private Session session;
+    private ServiceManager serviceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +56,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initDatas() {
-        mAuthSerice = new AuthService();
+        serviceManager = new ServiceManager();
 
         try {
             session = Session.get();
         } catch (ServiceException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Catch when getting session");
         }
 
         if (session.getSessionToken() != null) {
-            if (session.getSessionToken().validateToken()) {
+            if (session.getSessionToken().getToken() != null) {
                 launchMainActivity();
             }
         }
@@ -86,29 +85,24 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(final View view) {
                 if (verifyEditText(mApikey)) {
                     mCredentials = new Credentials(mApikey.getText().toString(), mUsername.getText().toString(), mUserkey.getText().toString());
-                    mAuthSerice.login(mCredentials, new Subscriber<Response<LoginResponse>>() {
+                    serviceManager.login(mCredentials, new Subscriber<Response<LoginResponse>>() {
                         @Override
                         public void onCompleted() {
-                            Log.d(TAG, "auth service onCompleted");
+                            Log.d(TAG, "login - onCompleted");
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "auth service onError");
-                            Toast.makeText(view.getContext(), "Could not authenticate you, check your credentials !", Toast.LENGTH_LONG).show();
+                            Log.d(TAG, "login - onError");
                         }
 
                         @Override
                         public void onNext(Response<LoginResponse> response) {
-                            Log.d(TAG, "auth service onNext");
+                            Log.d(TAG, "login - onNext");
                             if (response.isSuccessful()) {
-                                session.setSessionToken(new SessionToken(response.body().getToken()));
-                                if (session.getSessionToken() != null) {
-                                    if (session.getSessionToken().validateToken()) {
-                                        launchMainActivity();
-                                    }
-                                } else {
-                                    Toast.makeText(view.getContext(), "Could not authenticate you, check your credentials !", Toast.LENGTH_LONG).show();
+                                if (response.body().getToken() != null && !TextUtils.isEmpty(response.body().getToken())) {
+                                    session.setSessionToken(new SessionToken(response.body().getToken()));
+                                    launchMainActivity();
                                 }
                             }
                         }
@@ -118,8 +112,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Function to test if the text inside the edit text is ok
+     *
+     * @param editText
+     * @return true if it's ok, false if it's null or empty
+     */
     private boolean verifyEditText(EditText editText) {
         return editText != null && !TextUtils.isEmpty(editText.getText().toString());
     }
-
 }

@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import com.android.mytdvbapp.mytdvbapplication.activities.AccountActivity;
 import com.android.mytdvbapp.mytdvbapplication.R;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by antoinepelletier on 04/12/2017.
  */
@@ -53,10 +55,10 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
         navigation_view.addHeaderView(header);
         mImgAccount = header.findViewById(R.id.img_account);
 
-        initListener();
+        initListeners();
     }
 
-    private void initListener() {
+    private void initListeners() {
         mImgAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
