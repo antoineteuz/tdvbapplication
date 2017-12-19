@@ -7,4 +7,6 @@
     <string name="list_no_series_recently_updated">No series updated recently</string>
     <string name="progress_dialog">Progress dialog</string>
     <string name="please_wait">Please wait</string>
+
+    <string name="serie_detailed">Details Series</string>
 </resources>

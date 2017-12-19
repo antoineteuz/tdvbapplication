@@ -7,4 +7,5 @@ package com.android.mytdvbapp.mytdvbapplication.helper;
 public class Constants {
 
     public static final String API_KEY = "DDD9499A15BD56CB";
+    public static final String SERIE_NUMBER = "SERIE_NUMBER";
 }
