@@ -118,7 +118,7 @@ public class MainActivity extends AbstractActivity {
     private void initSeriesRV() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rv_series.setLayoutManager(linearLayoutManager);
-        adapter = new LastSeriesUpdatedAdapter(series);
+        adapter = new LastSeriesUpdatedAdapter(series, this);
         rv_series.setAdapter(adapter);
     }
 

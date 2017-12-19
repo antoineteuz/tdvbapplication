@@ -9,4 +9,9 @@
     <string name="please_wait">Please wait</string>
 
     <string name="serie_detailed">Details Series</string>
+    <string name="informations">Informations</string>
+    <string name="actors">Actors</string>
+    <string name="episodes">Episodes</string>
+    <string name="genre">Genre</string>
+    <string name="score">Score</string>
 </resources>

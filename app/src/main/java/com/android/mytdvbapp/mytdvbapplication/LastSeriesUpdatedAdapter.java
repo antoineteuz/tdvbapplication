@@ -1,13 +1,22 @@
 package com.android.mytdvbapp.mytdvbapplication;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.mytdvbapp.mytdvbapplication.activities.SerieDetailedActivity;
 import com.android.mytdvbapp.mytdvbapplication.models.SeriesInfo;
 
 import java.util.List;
+
+import static com.android.mytdvbapp.mytdvbapplication.helper.Constants.SERIE_NUMBER;
 
 /**
  * Created by antoinepelletier on 17/12/2017.
@@ -15,10 +24,14 @@ import java.util.List;
 
 public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpdatedViewHolder> {
 
-    private List<SeriesInfo> series;
+    private static String TAG = "LastSeriesUpdatedAdapter";
 
-    public LastSeriesUpdatedAdapter(List<SeriesInfo> series) {
+    private List<SeriesInfo> series;
+    private Context mContext;
+
+    public LastSeriesUpdatedAdapter(List<SeriesInfo> series, Context context) {
         this.series = series;
+        mContext = context;
     }
 
     @Override
@@ -29,10 +42,17 @@ public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpd
 
     @Override
     public void onBindViewHolder(LastSeriesUpdatedViewHolder holder, int position) {
-        SeriesInfo data = series.get(position);
+        final SeriesInfo data = series.get(position);
 
         holder.tv_id.setText(data.getId());
         holder.tv_time.setText(data.getLastUpdated());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchDetailActivity(data.getId());
+            }
+        });
     }
 
     /**
@@ -54,5 +74,20 @@ public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpd
     private String BeautifyDate(String epochTime) {
 
         return "";
+    }
+
+    /**
+     * Method to launch details series activity
+     */
+    private void launchDetailActivity(String id) {
+        Intent intent = new Intent(mContext, SerieDetailedActivity.class);
+        Bundle args = new Bundle();
+        args.putSerializable(SERIE_NUMBER, id);
+        intent.putExtras(args);
+        try {
+            mContext.startActivity(intent);
+        } catch (final ActivityNotFoundException ex) {
+            Log.e("", "Couldn't find activity:", ex);
+        }
     }
 }

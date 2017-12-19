@@ -1,12 +1,18 @@
 package com.android.mytdvbapp.mytdvbapplication.activities;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
+import com.android.mytdvbapp.mytdvbapplication.models.SerieDetailsInfo;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedResponse;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
@@ -14,6 +20,8 @@ import com.android.mytdvbapp.mytdvbapplication.network.ServiceManager;
 
 import java.util.HashMap;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Subscriber;
 
@@ -23,7 +31,31 @@ public class SerieDetailedActivity extends AbstractActivity {
 
     private static String TAG = "SerieDetailedActivity";
 
-    private SerieDetailedResponse serie;
+    @BindView(R.id.tv_title)
+    TextView tv_title;
+
+    @BindView(R.id.tv_overview)
+    TextView tv_overview;
+
+    @BindView(R.id.genre_container)
+    LinearLayout genre_container;
+
+    @BindView(R.id.genre_content)
+    TextView tv_genre_content;
+
+    @BindView(R.id.rating_container)
+    LinearLayout rating_container;
+
+    @BindView(R.id.rating)
+    RatingBar mRating;
+
+    @BindView(R.id.actors_container)
+    RelativeLayout actors_container;
+
+    @BindView(R.id.episodes_container)
+    RelativeLayout episodes_container;
+
+    private SerieDetailsInfo serie;
     private ServiceManager serviceManager;
     private Bundle args;
     private String id;
@@ -32,6 +64,8 @@ public class SerieDetailedActivity extends AbstractActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serie_detailed);
+        //
+        ButterKnife.bind(this);
         //
         initDatas();
     }
@@ -65,7 +99,7 @@ public class SerieDetailedActivity extends AbstractActivity {
                     progressDialog.dismiss();
                     if (response.isSuccessful()) {
                         if (response.body() != null) {
-                            serie = response.body();
+                            serie = response.body().getData();
                             initViews();
                         } else {
                             //todo : alert dialog
@@ -84,6 +118,64 @@ public class SerieDetailedActivity extends AbstractActivity {
      * Method to initialize views with content from web service
      */
     private void initViews() {
+        // Title
+        if (serie.getSeriesName() != null && !TextUtils.isEmpty(serie.getSeriesName())) {
+            tv_title.setText(serie.getSeriesName());
+        } else {
+            tv_title.setVisibility(View.GONE);
+        }
+
+        // Summary
+        if (serie.getOverview() != null && !TextUtils.isEmpty(serie.getOverview())) {
+            tv_overview.setText(serie.getOverview());
+        } else {
+            tv_overview.setVisibility(View.GONE);
+        }
+
+        // Genre
+        String genre = "[";
+        if (serie.getGenre() != null && serie.getGenre().size() > 0) {
+            for (int i = 0; i < serie.getGenre().size(); i++) {
+                if (i == serie.getGenre().size() - 1) {
+                    genre += serie.getGenre().get(i) + "]";
+                } else {
+                    genre += serie.getGenre().get(i) + ", ";
+                }
+            }
+            tv_genre_content.setText(genre);
+        } else {
+            genre_container.setVisibility(View.GONE);
+        }
+
+        // Rating
+        float rating = 0;
+        if (serie.getSiteRating() != 0) {
+            rating = serie.getSiteRating() / 2;
+            mRating.setRating(rating);
+        } else {
+            rating_container.setVisibility(View.GONE);
+        }
+
+        initListeners();
+    }
+
+    /**
+     * Method to initialize listeners on current screen
+     */
+    private void initListeners() {
+        actors_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // todo : launch actors activity or fragment
+            }
+        });
+
+        episodes_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // todo : launch episodes activity or fragment
+            }
+        });
     }
 
     /**

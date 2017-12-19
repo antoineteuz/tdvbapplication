@@ -3,4 +3,35 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="main_form">#5573BC</color>
+    <color name="light_orange">#30FF8436</color>
+    <color name="light_green">#30008a90</color>
+    <color name="blur_orange">#60FF8436</color>
+    <color name="blur_green">#60008a90</color>
+    <color name="transparent">#00ff0000</color>
+    <color name="blue_image">#006FB9</color>
+    <color name="yellow">#FFCA41</color>
+    <color name="turquoise">#00afc4</color>
+    <color name="blue">#038cb9</color>
+    <color name="cell_country">#FAFAFA</color>
+    <color name="gray_background">#F4F5F6</color>
+    <color name="gray_light">#E7E7E7</color>
+    <color name="red">#f74c4c</color>
+    <color name="orange">#ff8436</color>
+    <color name="blue_green">#008a90</color>
+    <color name="blue_light">#00afc4</color>
+    <color name="blue_dark">#33487B</color>
+    <color name="blue_gray">#949CB4</color>
+    <color name="green_light">#00dd50</color>
+    <color name="btn_gray">#dddddd</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dark_white">#dddedb</color>
+    <color name="dark_gray">#333333</color>
+    <color name="gray">#888888</color>
+    <color name="gray_hint">#b4b4b4</color>
+
+    <color name="dividerColor">#B4B4B4</color>
 </resources>
