@@ -150,10 +150,6 @@ public class MainActivity extends AbstractActivity {
         return new DateTime().withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59).getMillis();
     }
 
-    private void initListeners() {
-
-    }
-
     @Override
     public String getTitleBarTitle() {
         return getResources().getString(R.string.app_name);

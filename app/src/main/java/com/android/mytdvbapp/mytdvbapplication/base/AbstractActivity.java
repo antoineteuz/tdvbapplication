@@ -66,13 +66,7 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
     }
 
     private void initListeners() {
-        mImgAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), AccountActivity.class);
-                startActivity(intent);
-            }
-        });
+
     }
 
     @Override
@@ -134,7 +128,14 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-
+            case R.id.nav_search_series:
+                break;
+            case R.id.nav_consult_favorites:
+                break;
+            case R.id.nav_consult_my_account:
+                Intent intent = new Intent(this, AccountActivity.class);
+                startActivity(intent);
+                break;
         }
         return false;
     }

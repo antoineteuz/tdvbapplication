@@ -14,4 +14,18 @@
     <string name="episodes">Episodes</string>
     <string name="genre">Genre</string>
     <string name="score">Score</string>
+
+    <!-- Account -->
+    <string name="account_access_infos">Below are the information related to your tdvb account</string>
+    <string name="account_personal_infos">My personal informations</string>
+    <string name="account_name">Username</string>
+    <string name="account_language">Language</string>
+    <string name="account_favoritesDisplaymode">Favorites display mode</string>
+    <string name="account_deconnection">Deconnection</string>
+
+    <!-- Menu -->
+    <string name="search_tv_series">Search a tv series</string>
+    <string name="consult_favorites">Consult your favorites</string>
+    <string name="consult_my_account">Consult your account</string>
+    <string name="account_title">My Account</string>
 </resources>

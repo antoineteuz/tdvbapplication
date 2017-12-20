@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#FFCC00</color>
+    <color name="colorPrimaryDark">#705A00</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="main_form">#5573BC</color>
@@ -15,7 +15,7 @@
     <color name="turquoise">#00afc4</color>
     <color name="blue">#038cb9</color>
     <color name="cell_country">#FAFAFA</color>
-    <color name="gray_background">#F4F5F6</color>
+    <color name="gray_background_light">#F4F5F6</color>
     <color name="gray_light">#E7E7E7</color>
     <color name="red">#f74c4c</color>
     <color name="orange">#ff8436</color>
@@ -34,4 +34,6 @@
     <color name="gray_hint">#b4b4b4</color>
 
     <color name="dividerColor">#B4B4B4</color>
+    <color name="gray_background">#e5e5e5</color>
+>>>>>>> Add Account activity
 </resources>

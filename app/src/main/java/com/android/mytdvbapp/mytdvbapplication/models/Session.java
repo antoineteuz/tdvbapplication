@@ -63,6 +63,18 @@ public class Session {
         spEdit.putString(LOCAL_TOKEN, this.sessionToken.getToken()).apply();
     }
 
+    public void reset() {
+        sessionToken = null;
+        remove();
+    }
+
+    private void remove() {
+        SharedPreferences mySPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = mySPrefs.edit();
+        editor.remove(LOCAL_TOKEN);
+        editor.apply();
+    }
+
     public SessionToken getSessionToken() {
         return sessionToken;
     }
