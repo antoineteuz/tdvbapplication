@@ -69,6 +69,12 @@ public class ServiceManager implements INetworkService {
     }
 
     @Override
+    public void refreshToken(String current_token, Subscriber<Response<LoginResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.refreshToken(current_token), subscriber);
+    }
+
+    @Override
     public void getUser(String token, Subscriber<Response<UserResponse>> subscriber) {
         IRFApiService service = mRetrofit.create(IRFApiService.class);
         addObservable(service.getUser(token), subscriber);

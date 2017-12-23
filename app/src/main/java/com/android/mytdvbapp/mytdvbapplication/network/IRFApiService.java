@@ -30,6 +30,9 @@ public interface IRFApiService {
     @POST("/login")
     Observable<Response<LoginResponse>> login(@Body Credentials credentials);
 
+    @GET("/refresh_token")
+    Observable<Response<LoginResponse>> refreshToken(@Header("Authorization") String token);
+
     @GET("/user")
     Observable<Response<UserResponse>> getUser(@Header("Authorization") String token);
 

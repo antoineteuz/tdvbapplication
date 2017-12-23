@@ -14,12 +14,16 @@ import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
 import com.android.mytdvbapp.mytdvbapplication.models.SeriesInfo;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
+import com.android.mytdvbapp.mytdvbapplication.models.SessionToken;
+import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SeriesUpdatedResponse;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceManager;
 
 import org.joda.time.DateTime;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,8 +60,14 @@ public class MainActivity extends AbstractActivity {
         //
         initDatas();
         //
-        //initListeners();
 
+    }
+
+    /**
+     * Method to check if the current token is ok or not
+     */
+    private void checkToken() {
+        serviceManager = new ServiceManager();
     }
 
     private void initDatas() {
@@ -71,7 +81,7 @@ public class MainActivity extends AbstractActivity {
 
         //String fromTime = String.valueOf(getFromTime());
         // TODO : Valeurs pour tester -> de 23H59 à 00H00 pas de séries update
-        String fromTime = "1513382455";
+        String fromTime = "1513728000";
         String toTime = String.valueOf(getToTime());
 
         // TODO : launch progress dialog
@@ -103,13 +113,57 @@ public class MainActivity extends AbstractActivity {
                         list_empty.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    title.setVisibility(View.GONE);
-                    rv_series.setVisibility(View.GONE);
-                    list_empty.setVisibility(View.VISIBLE);
+                    if (response.code() == 401) {
+                        refreshToken();
+                    } else {
+                        title.setVisibility(View.GONE);
+                        rv_series.setVisibility(View.GONE);
+                        list_empty.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });
 
+    }
+
+    /**
+     * Method to refresh current token of the user
+     */
+    private void refreshToken() {
+        try {
+            progressDialog.show();
+            serviceManager.refreshToken(Session.get().getSessionToken().getToken(), new Subscriber<Response<LoginResponse>>() {
+                @Override
+                public void onCompleted() {
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onNext(Response<LoginResponse> response) {
+                    progressDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        if (response.body() != null) {
+                            try {
+                                Session.get().setSessionToken(new SessionToken(response.body().getToken()));
+                                initDatas();
+
+                            } catch (ServiceException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            //todo: handle error case, print dialog or do somehting
+                        }
+                    }
+                }
+            });
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.android.mytdvbapp.mytdvbapplication.activities;
 
+import android.content.Intent;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -98,7 +100,7 @@ public class AccountActivity extends AbstractActivity {
                         }
                     } else {
                         if (response.code() == 401) {
-                            // TODO : REFRESH TOKEN mamène
+                            // TODO : need to refresh token
                         }
                     }
                 }
@@ -127,14 +129,22 @@ public class AccountActivity extends AbstractActivity {
         btn_deconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //todo : dialog Are you sure to disconnect ?
                 try {
                     Session.get().reset();
-                    // TODO : Launch login activity and clear all the others
+                    closeAllactivities();
+
                 } catch (ServiceException e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    private void closeAllactivities() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     @Override

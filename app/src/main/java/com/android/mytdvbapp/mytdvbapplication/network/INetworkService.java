@@ -21,6 +21,8 @@ public interface INetworkService {
 
     void login(Credentials credentials, Subscriber<Response<LoginResponse>> subscriber);
 
+    void refreshToken(String current_token, Subscriber<Response<LoginResponse>> subscriber);
+
     void getUser(String token, Subscriber<Response<UserResponse>> subscriber);
 
     void getLastSeriesUpdated(HashMap<String, String> headers, String fromTime, String toTime, Subscriber<Response<SeriesUpdatedResponse>> subscriber);

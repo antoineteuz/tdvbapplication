@@ -14,7 +14,11 @@ import android.view.ViewGroup;
 import com.android.mytdvbapp.mytdvbapplication.activities.SerieDetailedActivity;
 import com.android.mytdvbapp.mytdvbapplication.models.SeriesInfo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static com.android.mytdvbapp.mytdvbapplication.helper.Constants.SERIE_NUMBER;
 
@@ -45,7 +49,8 @@ public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpd
         final SeriesInfo data = series.get(position);
 
         holder.tv_id.setText(data.getId());
-        holder.tv_time.setText(data.getLastUpdated());
+        long epochtime = Long.valueOf(data.getLastUpdated());
+        holder.tv_time.setText(beautifyDate(epochtime));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +76,11 @@ public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpd
      * @param epochTime
      * @return
      */
-    private String BeautifyDate(String epochTime) {
-
-        return "";
+    private String beautifyDate(long epochTime) {
+        Date datetest = new Date(epochTime * 1000);
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String datetostring = df.format(datetest);
+        return datetostring;
     }
 
     /**
