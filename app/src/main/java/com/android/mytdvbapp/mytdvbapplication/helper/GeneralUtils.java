@@ -6,18 +6,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
+import com.android.mytdvbapp.mytdvbapplication.base.AlertDialogFragment;
 
 /**
  * Created by antoinepelletier on 08/12/2017.
  */
 
 public class GeneralUtils {
+
+    private static String TAG = "GeneralUtils";
 
     /**
      * start activity animation
@@ -32,38 +38,50 @@ public class GeneralUtils {
     }
 
     /**
-     * show alert dialog
-     *
-     * @param title
-     * @param description
-     * @param activity
-     */
-    public static void showAlertDialog(String title, String description, Activity activity) {
-        // Build Alert Dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(title)
-                .setMessage(description)
-                .setCancelable(false)
-                .setPositiveButton(activity.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
+     * Show dialog
+     **/
+    public static void showAlertDialog(Context context, String title, String message) {
+        showAlertDialog(context, title, message, null);
     }
 
     /**
-     * Return true if Internet is reachable
-     *
-     * @param context Application-specific resources
-     * @return True if Internet is reachable
+     * Show dialog with just OK button
      */
-    public static boolean isConnectedToInternet(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static void showAlertDialog(Context context, String title, String message, AlertDialogFragment.AlertDialogListener callback) {
+        showAlertDialog(context, title, message, false, callback);
+    }
 
-        return connectivity != null && connectivity.getActiveNetworkInfo() != null
-                && connectivity.getActiveNetworkInfo().isConnected();
+
+    /**
+     * Show dialog witth a callback and an optional Cancel button
+     **/
+    public static void showAlertDialog(Context context, String title, String message, boolean showCancelButton, AlertDialogFragment.AlertDialogListener callback) {
+        AlertDialogFragment alertDialog = AlertDialogFragment.newInstance(
+                message,
+                title,
+                context.getResources().getString(R.string.ok),
+                showCancelButton ? context.getResources().getString(R.string.btn_cancel) : null,
+                callback);
+
+        alertDialog.setCancelable(false);
+        if (context instanceof FragmentActivity) {
+            try {
+                alertDialog.show(((FragmentActivity) context).getSupportFragmentManager(), AlertDialogFragment.FRAGMENT_TAG);
+            } catch (Exception e) {
+            }
+        } else {
+            Log.e(TAG, "Error trying to call showAlertDialog from outside of an Activity");
+        }
+    }
+
+    public static boolean isConnectInternet(Context context) {
+        ConnectivityManager conManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = conManager.getActiveNetworkInfo();
+        if ((networkInfo == null) || (!networkInfo.isConnected()) || (!networkInfo.isAvailable())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**

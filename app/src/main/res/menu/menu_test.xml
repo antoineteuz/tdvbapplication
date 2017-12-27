@@ -3,6 +3,9 @@
 
     <group>
         <item
+            android:id="@+id/nav_last_series"
+            android:title="@string/last_series_updated" />
+        <item
             android:id="@+id/nav_search_series"
             android:title="@string/search_tv_series" />
         <item

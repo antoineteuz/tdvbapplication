@@ -1,6 +1,7 @@
 package com.android.mytdvbapp.mytdvbapplication.network;
 
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
+import com.android.mytdvbapp.mytdvbapplication.models.response.FavoritesResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedActorsResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedResponse;
@@ -72,6 +73,24 @@ public class ServiceManager implements INetworkService {
     public void refreshToken(String current_token, Subscriber<Response<LoginResponse>> subscriber) {
         IRFApiService service = mRetrofit.create(IRFApiService.class);
         addObservable(service.refreshToken(current_token), subscriber);
+    }
+
+    @Override
+    public void getFavorites(String current_token, Subscriber<Response<FavoritesResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.getUserFavorites(current_token), subscriber);
+    }
+
+    @Override
+    public void putFavorite(String id, String current_token, Subscriber<Response<FavoritesResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.putFavorite(id, current_token), subscriber);
+    }
+
+    @Override
+    public void deleteFavorite(String id, String current_token, Subscriber<Response<FavoritesResponse>> subscriber) {
+        IRFApiService service = mRetrofit.create(IRFApiService.class);
+        addObservable(service.deleteFavorite(id, current_token), subscriber);
     }
 
     @Override

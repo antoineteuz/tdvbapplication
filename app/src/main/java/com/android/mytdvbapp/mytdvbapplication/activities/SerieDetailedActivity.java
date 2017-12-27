@@ -1,17 +1,18 @@
 package com.android.mytdvbapp.mytdvbapplication.activities;
 
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
+import com.android.mytdvbapp.mytdvbapplication.base.NavigationManager;
+import com.android.mytdvbapp.mytdvbapplication.fragments.SeriesDetailedActorsFragment;
+import com.android.mytdvbapp.mytdvbapplication.fragments.SeriesDetailedEpisodesFragment;
+import com.android.mytdvbapp.mytdvbapplication.fragments.SeriesDetailedMainInfosFragment;
 import com.android.mytdvbapp.mytdvbapplication.models.SerieDetailsInfo;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedResponse;
@@ -31,34 +32,14 @@ public class SerieDetailedActivity extends AbstractActivity {
 
     private static String TAG = "SerieDetailedActivity";
 
-    @BindView(R.id.tv_title)
-    TextView tv_title;
+    @BindView(R.id.tv_serie_id)
+    TextView tv_serie_id;
 
-    @BindView(R.id.tv_overview)
-    TextView tv_overview;
-
-    @BindView(R.id.genre_container)
-    LinearLayout genre_container;
-
-    @BindView(R.id.genre_content)
-    TextView tv_genre_content;
-
-    @BindView(R.id.rating_container)
-    LinearLayout rating_container;
-
-    @BindView(R.id.rating)
-    RatingBar mRating;
-
-    @BindView(R.id.actors_container)
-    RelativeLayout actors_container;
-
-    @BindView(R.id.episodes_container)
-    RelativeLayout episodes_container;
-
-    private SerieDetailsInfo serie;
-    private ServiceManager serviceManager;
+    public SerieDetailsInfo serie;
+    public ServiceManager serviceManager;
     private Bundle args;
-    private String id;
+    public String id;
+    private NavigationManager mNavigationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,33 +55,36 @@ public class SerieDetailedActivity extends AbstractActivity {
      * Method to initialize a data
      */
     private void initDatas() {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        mNavigationManager = new NavigationManager();
+        mNavigationManager.init(fragmentManager, R.id.series_detailed_container);
+
+
         args = getIntent().getExtras();
         if (args != null) {
             id = args.getString(SERIE_NUMBER);
+            tv_serie_id.setText("Serie n° " + id);
             //
             serviceManager = new ServiceManager();
             //
-            progressDialog.show();
             serviceManager.getDetailsSerie(buildHeaders(), id, new Subscriber<Response<SerieDetailedResponse>>() {
                 @Override
                 public void onCompleted() {
-                    progressDialog.dismiss();
                     Log.d(TAG, "series details - onCompleted");
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    progressDialog.dismiss();
                     Log.d(TAG, e.getMessage());
                 }
 
                 @Override
                 public void onNext(Response<SerieDetailedResponse> response) {
-                    progressDialog.dismiss();
                     if (response.isSuccessful()) {
                         if (response.body() != null) {
                             serie = response.body().getData();
-                            initViews();
+                            launchMainInformationsFragment();
                         } else {
                             //todo : alert dialog
                         }
@@ -115,67 +99,27 @@ public class SerieDetailedActivity extends AbstractActivity {
     }
 
     /**
-     * Method to initialize views with content from web service
+     * Method to launch the Main informations Fragment about a specific series
      */
-    private void initViews() {
-        // Title
-        if (serie.getSeriesName() != null && !TextUtils.isEmpty(serie.getSeriesName())) {
-            tv_title.setText(serie.getSeriesName());
-        } else {
-            tv_title.setVisibility(View.GONE);
-        }
-
-        // Summary
-        if (serie.getOverview() != null && !TextUtils.isEmpty(serie.getOverview())) {
-            tv_overview.setText(serie.getOverview());
-        } else {
-            tv_overview.setVisibility(View.GONE);
-        }
-
-        // Genre
-        String genre = "[";
-        if (serie.getGenre() != null && serie.getGenre().size() > 0) {
-            for (int i = 0; i < serie.getGenre().size(); i++) {
-                if (i == serie.getGenre().size() - 1) {
-                    genre += serie.getGenre().get(i) + "]";
-                } else {
-                    genre += serie.getGenre().get(i) + ", ";
-                }
-            }
-            tv_genre_content.setText(genre);
-        } else {
-            genre_container.setVisibility(View.GONE);
-        }
-
-        // Rating
-        float rating = 0;
-        if (serie.getSiteRating() != 0) {
-            rating = serie.getSiteRating() / 2;
-            mRating.setRating(rating);
-        } else {
-            rating_container.setVisibility(View.GONE);
-        }
-
-        initListeners();
+    private void launchMainInformationsFragment() {
+        SeriesDetailedMainInfosFragment seriesDetailedMainInfosFragment = new SeriesDetailedMainInfosFragment();
+        mNavigationManager.openNoStack(seriesDetailedMainInfosFragment);
     }
 
     /**
-     * Method to initialize listeners on current screen
+     * Method to launch the Main informations Fragment about a specific series
      */
-    private void initListeners() {
-        actors_container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // todo : launch actors activity or fragment
-            }
-        });
+    public void launchActorsFragment() {
+        SeriesDetailedActorsFragment actorsFragment = new SeriesDetailedActorsFragment();
+        mNavigationManager.open(actorsFragment);
+    }
 
-        episodes_container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // todo : launch episodes activity or fragment
-            }
-        });
+    /**
+     * Method to launch the Main informations Fragment about a specific series
+     */
+    public void launchEpisodesFragment() {
+        SeriesDetailedEpisodesFragment episodesFragment = new SeriesDetailedEpisodesFragment();
+        mNavigationManager.open(episodesFragment);
     }
 
     /**
@@ -183,7 +127,7 @@ public class SerieDetailedActivity extends AbstractActivity {
      *
      * @return map of key and value headers
      */
-    private HashMap<String, String> buildHeaders() {
+    public HashMap<String, String> buildHeaders() {
         HashMap<String, String> headers = new HashMap<>();
         try {
             headers.put("Authorization", Session.get().getSessionToken().getToken());

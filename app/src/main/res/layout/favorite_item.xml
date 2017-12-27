@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="70dp">
+
+    <TextView
+        android:id="@+id/favorite_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:paddingLeft="20dp"
+        android:paddingStart="20dp"
+        tools:ignore="RtlSymmetry"
+        tools:text="123456" />
+
+    <ImageView
+        android:id="@+id/favorite_delete"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:src="@drawable/delete" />
+
+    <View
+        style="@style/dividerStyle"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

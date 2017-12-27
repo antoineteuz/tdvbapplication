@@ -2,12 +2,12 @@ package com.android.mytdvbapp.mytdvbapplication.base;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -61,6 +61,7 @@ public class NavigationManager {
     public void open(@NonNull AbstractFragment fragment) {
         if (mFragmentManager != null) {
             mFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.slide_bottom_to_top, android.R.animator.fade_out)
                     .replace(mContainerViewId, fragment)
                     .addToBackStack(fragment.getID())
                     .commit();
@@ -79,6 +80,7 @@ public class NavigationManager {
             fragment.setArguments(bundle);
             mFragmentManager.beginTransaction()
                     .replace(mContainerViewId, fragment)
+                    .setCustomAnimations(R.anim.slide_bottom_to_top, android.R.animator.fade_out)
                     .addToBackStack(fragment.getID())
                     .commit();
         }
@@ -88,6 +90,7 @@ public class NavigationManager {
     public void openNoStack(@NonNull AbstractFragment fragment) {
         if (mFragmentManager != null) {
             mFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.slide_bottom_to_top, android.R.animator.fade_out)
                     .replace(mContainerViewId, fragment)
                     .disallowAddToBackStack()
                     .commit();

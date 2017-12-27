@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.mytdvbapp.mytdvbapplication.activities.AccountActivity;
 import com.android.mytdvbapp.mytdvbapplication.R;
+import com.android.mytdvbapp.mytdvbapplication.activities.FavoriteActivity;
+import com.android.mytdvbapp.mytdvbapplication.adapters.FavoriteAdapter;
 
 /**
  * Created by antoinepelletier on 04/12/2017.
@@ -33,8 +35,6 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
     private ActionBarDrawerToggle mDrawerToggle;
     private Menu drawerMenu;
     private ImageView mImgAccount;
-
-    public MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +55,6 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
         View header = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
         navigation_view.addHeaderView(header);
         mImgAccount = header.findViewById(R.id.img_account);
-
-        initListeners();
-
-        progressDialog = new MaterialDialog.Builder(this)
-                .title(R.string.progress_dialog)
-                .content(R.string.please_wait)
-                .progress(true, 0)
-                .build();
-    }
-
-    private void initListeners() {
 
     }
 
@@ -128,13 +117,17 @@ public abstract class AbstractActivity extends AppCompatActivity implements Menu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.nav_last_series:
+                break;
             case R.id.nav_search_series:
                 break;
             case R.id.nav_consult_favorites:
+                Intent favorite = new Intent(this, FavoriteActivity.class);
+                startActivity(favorite);
                 break;
             case R.id.nav_consult_my_account:
-                Intent intent = new Intent(this, AccountActivity.class);
-                startActivity(intent);
+                Intent account = new Intent(this, AccountActivity.class);
+                startActivity(account);
                 break;
         }
         return false;

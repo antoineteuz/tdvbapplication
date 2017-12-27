@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
+import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
+import com.android.mytdvbapp.mytdvbapplication.models.SessionToken;
+import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.UserResponse;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceManager;
@@ -41,7 +44,6 @@ public class AccountActivity extends AbstractActivity {
     @BindView(R.id.btn_deconnexion)
     RelativeLayout btn_deconnexion;
 
-    private Session session;
     private ServiceManager serviceManager;
 
     private String hello = "Hello ", username = "", langugage = "", displaymode = "";
@@ -52,55 +54,53 @@ public class AccountActivity extends AbstractActivity {
         setContentView(R.layout.activity_account);
         //
         ButterKnife.bind(this);
+        //
         serviceManager = new ServiceManager();
-        //
-        try {
-            session = Session.get();
-        } catch (ServiceException e) {
-            Log.d(TAG, "Catch when getting session");
-        }
-        //
         initDatas();
+        //
         initListeners();
     }
 
     private void initDatas() {
         try {
-            progressDialog.show();
             serviceManager.getUser(Session.get().getSessionToken().getToken(), new Subscriber<Response<UserResponse>>() {
                 @Override
                 public void onCompleted() {
-                    progressDialog.dismiss();
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    progressDialog.dismiss();
                 }
 
                 @Override
                 public void onNext(Response<UserResponse> response) {
-                    progressDialog.dismiss();
                     if (response.isSuccessful()) {
                         if (response.body().getData() != null) {
                             if (response.body().getData().getUserName() != null && !TextUtils.isEmpty(response.body().getData().getUserName())) {
                                 hello += response.body().getData().getUserName();
                                 username = response.body().getData().getUserName();
+                            } else {
+                                tv_hello.setVisibility(View.GONE);
                             }
 
                             if (response.body().getData().getLanguage() != null && !TextUtils.isEmpty(response.body().getData().getLanguage())) {
                                 langugage += response.body().getData().getLanguage();
+                            } else {
+                                tv_language.setVisibility(View.GONE);
                             }
 
                             if (response.body().getData().getFavoritesDisplaymode() != null && !TextUtils.isEmpty(response.body().getData().getFavoritesDisplaymode())) {
                                 displaymode += response.body().getData().getFavoritesDisplaymode();
+                            } else {
+                                tv_favorites_display_mode.setVisibility(View.GONE);
                             }
 
                             initViews();
                         }
                     } else {
                         if (response.code() == 401) {
-                            // TODO : need to refresh token
+                            // TODO : Need to refresh token
+                            refreshToken();
                         }
                     }
                 }
@@ -108,7 +108,42 @@ public class AccountActivity extends AbstractActivity {
         } catch (ServiceException e) {
             e.printStackTrace();
             // TODO : show toast or dialog
-            progressDialog.dismiss();
+        }
+    }
+
+    /**
+     * Method to refresh current token of the user
+     */
+    private void refreshToken() {
+        try {
+            serviceManager.refreshToken(Session.get().getSessionToken().getToken(), new Subscriber<Response<LoginResponse>>() {
+                @Override
+                public void onCompleted() {
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                }
+
+                @Override
+                public void onNext(Response<LoginResponse> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body() != null) {
+                            try {
+                                Session.get().setSessionToken(new SessionToken(response.body().getToken()));
+
+                                // Then recall initDatas with good token
+                                initDatas();
+
+                            } catch (ServiceException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (ServiceException e) {
+            e.printStackTrace();
         }
     }
 

@@ -25,7 +25,17 @@
 
     <!-- Menu -->
     <string name="search_tv_series">Search a tv series</string>
+    <string name="last_series_updated">Last series updated</string>
     <string name="consult_favorites">Consult your favorites</string>
     <string name="consult_my_account">Consult your account</string>
     <string name="account_title">My Account</string>
+
+    <!-- Favorites -->
+    <string name="my_favorites">My favorites</string>
+    <string name="deleted">Deleted</string>
+    <string name="undo">Undo</string>
+    <string name="title_unavailable_connection">Network anavailable</string>
+    <string name="mess_unavailable_connection">The internet connection seems interrupted. Please check your connection and try again</string>
+    <string name="btn_done">OK</string>
+    <string name="btn_cancel">cancel</string>
 </resources>

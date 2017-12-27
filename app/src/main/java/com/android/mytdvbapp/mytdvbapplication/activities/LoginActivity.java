@@ -8,9 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.mytdvbapp.mytdvbapplication.R;
+import com.android.mytdvbapp.mytdvbapplication.helper.GeneralUtils;
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
 import com.android.mytdvbapp.mytdvbapplication.models.SessionToken;
@@ -39,11 +40,11 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.btn_connexion)
     Button mBtnConnexion;
 
+    @BindView(R.id.progress)
+    ProgressBar progress;
 
     private Credentials mCredentials;
-    private Session session;
     private ServiceManager serviceManager;
-    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,34 +53,27 @@ public class LoginActivity extends AppCompatActivity {
         //
         ButterKnife.bind(this);
         //
-        initViews();
         initDatas();
         //
         initListeners();
     }
 
-    private void initViews() {
-        progressDialog = new MaterialDialog.Builder(this)
-                .title(R.string.progress_dialog)
-                .content(R.string.please_wait)
-                .progress(true, 0)
-                .build();
-    }
-
     private void initDatas() {
         serviceManager = new ServiceManager();
 
+        // First, we check if we already have a valid token save into the phone
         try {
-            session = Session.get();
+            if (Session.get().getSessionToken() != null) {
+                if (Session.get().getSessionToken().getToken() != null) {
+                    // If it's this case, we launch the main activity
+                    launchMainActivity();
+                }
+            }
+            // Else, user needs to connect himself
         } catch (ServiceException e) {
-            Log.d(TAG, "Catch when getting session");
+            e.printStackTrace();
         }
 
-        if (session.getSessionToken() != null) {
-            if (session.getSessionToken().getToken() != null) {
-                launchMainActivity();
-            }
-        }
     }
 
     private void launchMainActivity() {
@@ -96,33 +90,46 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(final View view) {
                 if (verifyEditText(mApikey)) {
                     mCredentials = new Credentials(mApikey.getText().toString(), mUsername.getText().toString(), mUserkey.getText().toString());
+                    if (!GeneralUtils.isConnectInternet(view.getContext())) {
 
-                    progressDialog.show();
-                    serviceManager.login(mCredentials, new Subscriber<Response<LoginResponse>>() {
-                        @Override
-                        public void onCompleted() {
-                            progressDialog.dismiss();
-                            Log.d(TAG, "login - onCompleted");
-                        }
+                        GeneralUtils.showAlertDialog(view.getContext(),
+                                getResources().getString(R.string.title_unavailable_connection),
+                                getResources().getString(R.string.mess_unavailable_connection));
+                        return;
+                    } else {
+                        progress.setVisibility(View.VISIBLE);
+                        serviceManager.login(mCredentials, new Subscriber<Response<LoginResponse>>() {
+                            @Override
+                            public void onCompleted() {
+                                progress.setVisibility(View.GONE);
+                                Log.d(TAG, "login - onCompleted");
+                            }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            progressDialog.dismiss();
-                            Log.d(TAG, "login - onError");
-                        }
+                            @Override
+                            public void onError(Throwable e) {
+                                progress.setVisibility(View.GONE);
+                                Log.d(TAG, "login - onError");
+                            }
 
-                        @Override
-                        public void onNext(Response<LoginResponse> response) {
-                            progressDialog.dismiss();
-                            Log.d(TAG, "login - onNext");
-                            if (response.isSuccessful()) {
-                                if (response.body().getToken() != null && !TextUtils.isEmpty(response.body().getToken())) {
-                                    session.setSessionToken(new SessionToken(response.body().getToken()));
-                                    launchMainActivity();
+                            @Override
+                            public void onNext(Response<LoginResponse> response) {
+                                //progressDialog.dismiss();
+                                progress.setVisibility(View.GONE);
+                                Log.d(TAG, "login - onNext");
+                                if (response.isSuccessful()) {
+                                    if (response.body().getToken() != null && !TextUtils.isEmpty(response.body().getToken())) {
+                                        try {
+                                            Session.get().setSessionToken(new SessionToken(response.body().getToken()));
+                                            Session.get().setApi_key(mApikey.getText().toString());
+                                        } catch (ServiceException e) {
+                                            e.printStackTrace();
+                                        }
+                                        launchMainActivity();
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         });

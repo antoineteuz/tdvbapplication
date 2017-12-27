@@ -1,6 +1,5 @@
-package com.android.mytdvbapp.mytdvbapplication;
+package com.android.mytdvbapp.mytdvbapplication.adapters;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.mytdvbapp.mytdvbapplication.viewholders.LastSeriesUpdatedViewHolder;
+import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.activities.SerieDetailedActivity;
 import com.android.mytdvbapp.mytdvbapplication.models.SeriesInfo;
 
@@ -18,7 +19,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static com.android.mytdvbapp.mytdvbapplication.helper.Constants.SERIE_NUMBER;
 
@@ -67,7 +67,7 @@ public class LastSeriesUpdatedAdapter extends RecyclerView.Adapter<LastSeriesUpd
      */
     @Override
     public int getItemCount() {
-        return series.size();
+        return series != null ? series.size() : 0;
     }
 
     /**

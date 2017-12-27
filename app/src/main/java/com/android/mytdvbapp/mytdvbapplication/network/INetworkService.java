@@ -1,6 +1,7 @@
 package com.android.mytdvbapp.mytdvbapplication.network;
 
 import com.android.mytdvbapp.mytdvbapplication.models.Credentials;
+import com.android.mytdvbapp.mytdvbapplication.models.response.FavoritesResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.LoginResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedActorsResponse;
 import com.android.mytdvbapp.mytdvbapplication.models.response.SerieDetailedResponse;
@@ -22,6 +23,12 @@ public interface INetworkService {
     void login(Credentials credentials, Subscriber<Response<LoginResponse>> subscriber);
 
     void refreshToken(String current_token, Subscriber<Response<LoginResponse>> subscriber);
+
+    void getFavorites(String current_token, Subscriber<Response<FavoritesResponse>> subscriber);
+
+    void putFavorite(String favorite_id, String current_token, Subscriber<Response<FavoritesResponse>> subscriber);
+
+    void deleteFavorite(String favorite_id, String current_token, Subscriber<Response<FavoritesResponse>> subscriber);
 
     void getUser(String token, Subscriber<Response<UserResponse>> subscriber);
 

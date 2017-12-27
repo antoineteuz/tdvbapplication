@@ -1,8 +1,10 @@
-package com.android.mytdvbapp.mytdvbapplication;
+package com.android.mytdvbapp.mytdvbapplication.viewholders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.mytdvbapp.mytdvbapplication.R;
 
 /**
  * Created by antoinepelletier on 17/12/2017.

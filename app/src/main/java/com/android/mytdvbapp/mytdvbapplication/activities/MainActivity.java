@@ -7,11 +7,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.mytdvbapp.mytdvbapplication.LastSeriesUpdatedAdapter;
+import com.android.mytdvbapp.mytdvbapplication.adapters.LastSeriesUpdatedAdapter;
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractActivity;
+import com.android.mytdvbapp.mytdvbapplication.helper.GeneralUtils;
 import com.android.mytdvbapp.mytdvbapplication.models.SeriesInfo;
 import com.android.mytdvbapp.mytdvbapplication.models.Session;
 import com.android.mytdvbapp.mytdvbapplication.models.SessionToken;
@@ -20,10 +22,8 @@ import com.android.mytdvbapp.mytdvbapplication.models.response.SeriesUpdatedResp
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
 import com.android.mytdvbapp.mytdvbapplication.network.ServiceManager;
 
-import org.joda.time.DateTime;
-
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,11 +42,13 @@ public class MainActivity extends AbstractActivity {
     @BindView(R.id.rv_last_series)
     RecyclerView rv_series;
 
+    @BindView(R.id.activity_main_progress)
+    ProgressBar progressBar;
+
     @BindView(R.id.tv_list_empty)
     TextView list_empty;
 
     private ServiceManager serviceManager;
-    private Session session;
 
     private List<SeriesInfo> series;
     private LastSeriesUpdatedAdapter adapter;
@@ -58,72 +60,61 @@ public class MainActivity extends AbstractActivity {
         //
         ButterKnife.bind(this);
         //
+        serviceManager = new ServiceManager();
         initDatas();
         //
 
     }
 
-    /**
-     * Method to check if the current token is ok or not
-     */
-    private void checkToken() {
-        serviceManager = new ServiceManager();
-    }
-
     private void initDatas() {
-        serviceManager = new ServiceManager();
 
-        try {
-            session = Session.get();
-        } catch (ServiceException e) {
-            Log.d(TAG, "Catch when getting session");
-        }
+        String fromTime = getFromTime();
+        String toTime = getToTime();
 
-        //String fromTime = String.valueOf(getFromTime());
-        // TODO : Valeurs pour tester -> de 23H59 à 00H00 pas de séries update
-        String fromTime = "1513728000";
-        String toTime = String.valueOf(getToTime());
+        if (!GeneralUtils.isConnectInternet(this)) {
 
-        // TODO : launch progress dialog
+            GeneralUtils.showAlertDialog(this,
+                    getResources().getString(R.string.title_unavailable_connection),
+                    getResources().getString(R.string.mess_unavailable_connection));
+            return;
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            serviceManager.getLastSeriesUpdated(buildHeaders(), fromTime, toTime, new Subscriber<Response<SeriesUpdatedResponse>>() {
+                @Override
+                public void onCompleted() {
+                    progressBar.setVisibility(View.GONE);
+                }
 
-        progressDialog.show();
-        serviceManager.getLastSeriesUpdated(buildHeaders(), fromTime, toTime, new Subscriber<Response<SeriesUpdatedResponse>>() {
-            @Override
-            public void onCompleted() {
-                Log.d(TAG, "last series updated - onCompleted");
-                progressDialog.dismiss();
-            }
+                @Override
+                public void onError(Throwable e) {
+                    progressBar.setVisibility(View.GONE);
+                    Log.e(TAG, e.getMessage());
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                progressDialog.dismiss();
-                //TODO : Gérer erreur
-            }
-
-            @Override
-            public void onNext(Response<SeriesUpdatedResponse> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    if (response.body().getData() != null && response.body().getData().size() > 0) {
-                        series = response.body().getData();
-                        initSeriesRV();
+                @Override
+                public void onNext(Response<SeriesUpdatedResponse> response) {
+                    progressBar.setVisibility(View.GONE);
+                    if (response.isSuccessful()) {
+                        if (response.body().getData() != null && response.body().getData().size() > 0) {
+                            series = response.body().getData();
+                            initSeriesRV();
+                        } else {
+                            title.setVisibility(View.GONE);
+                            rv_series.setVisibility(View.GONE);
+                            list_empty.setVisibility(View.VISIBLE);
+                        }
                     } else {
-                        title.setVisibility(View.GONE);
-                        rv_series.setVisibility(View.GONE);
-                        list_empty.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if (response.code() == 401) {
-                        refreshToken();
-                    } else {
-                        title.setVisibility(View.GONE);
-                        rv_series.setVisibility(View.GONE);
-                        list_empty.setVisibility(View.VISIBLE);
+                        if (response.code() == 401) {
+                            refreshToken();
+                        } else {
+                            title.setVisibility(View.GONE);
+                            rv_series.setVisibility(View.GONE);
+                            list_empty.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-            }
-        });
-
+            });
+        }
     }
 
     /**
@@ -131,36 +122,44 @@ public class MainActivity extends AbstractActivity {
      */
     private void refreshToken() {
         try {
-            progressDialog.show();
-            serviceManager.refreshToken(Session.get().getSessionToken().getToken(), new Subscriber<Response<LoginResponse>>() {
-                @Override
-                public void onCompleted() {
-                    progressDialog.dismiss();
-                }
+            if (!GeneralUtils.isConnectInternet(this)) {
 
-                @Override
-                public void onError(Throwable e) {
-                    progressDialog.dismiss();
-                }
+                GeneralUtils.showAlertDialog(this,
+                        getResources().getString(R.string.title_unavailable_connection),
+                        getResources().getString(R.string.mess_unavailable_connection));
+                return;
+            } else {
+                progressBar.setVisibility(View.VISIBLE);
+                serviceManager.refreshToken(Session.get().getSessionToken().getToken(), new Subscriber<Response<LoginResponse>>() {
+                    @Override
+                    public void onCompleted() {
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onNext(Response<LoginResponse> response) {
-                    progressDialog.dismiss();
-                    if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            try {
-                                Session.get().setSessionToken(new SessionToken(response.body().getToken()));
-                                initDatas();
+                    @Override
+                    public void onError(Throwable e) {
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-                            } catch (ServiceException e) {
-                                e.printStackTrace();
+                    @Override
+                    public void onNext(Response<LoginResponse> response) {
+                        progressBar.setVisibility(View.GONE);
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                try {
+                                    Session.get().setSessionToken(new SessionToken(response.body().getToken()));
+                                    initDatas();
+
+                                } catch (ServiceException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                // todo: something
                             }
-                        } else {
-                            //todo: handle error case, print dialog or do somehting
                         }
                     }
-                }
-            });
+                });
+            }
         } catch (ServiceException e) {
             e.printStackTrace();
         }
@@ -178,30 +177,45 @@ public class MainActivity extends AbstractActivity {
 
     private HashMap<String, String> buildHeaders() {
         HashMap<String, String> headers = new HashMap<>();
-        if (session != null) {
-            if (session.getSessionToken().getToken() != null && !TextUtils.isEmpty(session.getSessionToken().getToken())) {
-                headers.put("Authorization", session.getSessionToken().getToken());
+        try {
+            if (Session.get() != null) {
+                if (Session.get().getSessionToken().getToken() != null && !TextUtils.isEmpty(Session.get().getSessionToken().getToken())) {
+                    headers.put("Authorization", Session.get().getSessionToken().getToken());
+                }
             }
+        } catch (ServiceException e) {
+            e.printStackTrace();
         }
         return headers;
     }
 
     /**
+     * Function to get the date from yesterday
+     *
+     * @return
+     */
+    private Date yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
+    }
+
+    /**
      * Function to get the date at the start of the day 00:00:00 UTC based
      *
-     * @return DateTime format
+     * @return String time
      */
-    private Long getFromTime() {
-        return new DateTime().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).getMillis();
+    private String getFromTime() {
+        return String.valueOf(yesterday().getTime() / 1000);
     }
 
     /**
      * Function to get the date at the moment UTC based
      *
-     * @return DateTime format
+     * @return String time
      */
-    private Long getToTime() {
-        return new DateTime().withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59).getMillis();
+    private String getToTime() {
+        return String.valueOf(System.currentTimeMillis() / 1000);
     }
 
     @Override
