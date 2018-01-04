@@ -13,7 +13,8 @@
     <string name="actors">Actors</string>
     <string name="episodes">Episodes</string>
     <string name="genre">Genre</string>
-    <string name="score">Score</string>
+    <string name="tdvb_score">TDVB Score</string>
+    <string name="user_score">Your Score</string>
 
     <!-- Account -->
     <string name="account_access_infos">Below are the information related to your tdvb account</string>
@@ -38,4 +39,9 @@
     <string name="mess_unavailable_connection">The internet connection seems interrupted. Please check your connection and try again</string>
     <string name="btn_done">OK</string>
     <string name="btn_cancel">cancel</string>
+
+    <string name="send_note">Send this note</string>
+    <string name="title_note_tdvb">Send your note</string>
+    <string name="description_note_tdvb">You are going to send your note on our server, are you sure ?</string>
+    <string name="share_serie">Share this serie</string>
 </resources>

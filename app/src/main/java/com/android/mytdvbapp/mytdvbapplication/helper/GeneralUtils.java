@@ -48,7 +48,7 @@ public class GeneralUtils {
      * Show dialog with just OK button
      */
     public static void showAlertDialog(Context context, String title, String message, AlertDialogFragment.AlertDialogListener callback) {
-        showAlertDialog(context, title, message, false, callback);
+        showAlertDialog(context, title, message, true, callback);
     }
 
 

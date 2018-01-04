@@ -1,7 +1,10 @@
 package com.android.mytdvbapp.mytdvbapplication.fragments;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -9,8 +12,15 @@ import android.widget.TextView;
 
 import com.android.mytdvbapp.mytdvbapplication.R;
 import com.android.mytdvbapp.mytdvbapplication.base.AbstractFragment;
+import com.android.mytdvbapp.mytdvbapplication.base.AlertDialogFragment;
+import com.android.mytdvbapp.mytdvbapplication.helper.GeneralUtils;
+import com.android.mytdvbapp.mytdvbapplication.models.Session;
+import com.android.mytdvbapp.mytdvbapplication.models.response.FavoritesResponse;
+import com.android.mytdvbapp.mytdvbapplication.network.ServiceException;
 
 import butterknife.BindView;
+import retrofit2.Response;
+import rx.Subscriber;
 
 /**
  * Created by antoinepelletier on 24/12/2017.
@@ -18,8 +28,13 @@ import butterknife.BindView;
 
 public class SeriesDetailedMainInfosFragment extends AbstractFragment {
 
+    private static String ID = "SeriesDetailedMainInfosFragment";
+
     @BindView(R.id.tv_title)
     TextView tv_title;
+
+    @BindView(R.id.img_favorite)
+    ImageView btn_favorite;
 
     @BindView(R.id.tv_overview)
     TextView tv_overview;
@@ -39,20 +54,34 @@ public class SeriesDetailedMainInfosFragment extends AbstractFragment {
     @BindView(R.id.rating_value)
     TextView tv_rating_value;
 
+    @BindView(R.id.user_rating_container)
+    LinearLayout user_rating_container;
+
+    @BindView(R.id.user_rating)
+    RatingBar mUserRating;
+
+    @BindView(R.id.user_rating_value)
+    TextView tv_user_rating_value;
+
+    @BindView(R.id.btn_send_note)
+    Button btn_send_note;
+
     @BindView(R.id.actors_container)
     RelativeLayout actors_container;
 
     @BindView(R.id.episodes_container)
     RelativeLayout episodes_container;
 
-    private static String ID = "SeriesDetailedMainInfosFragment";
+    @BindView(R.id.btn_share)
+    Button btn_share;
+
+    private boolean isChecked = false;
 
     /**
      * initialize view
      */
     @Override
     protected void initViews() {
-
 
         // Title
         if (mHost.serie.getSeriesName() != null && !TextUtils.isEmpty(mHost.serie.getSeriesName())) {
@@ -108,6 +137,97 @@ public class SeriesDetailedMainInfosFragment extends AbstractFragment {
             @Override
             public void onClick(View view) {
                 mHost.launchEpisodesFragment();
+            }
+        });
+
+        mUserRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                tv_user_rating_value.setText(String.valueOf(v));
+            }
+        });
+
+        btn_send_note.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GeneralUtils.showAlertDialog(getContext(),
+                        getContext().getString(R.string.title_note_tdvb),
+                        getContext().getString(R.string.description_note_tdvb),
+                        new AlertDialogFragment.AlertDialogListener() {
+                            @Override
+                            public void onPositiveButton() {
+                                // todo : call WS SEND NOTE
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onNegativeButton() {
+                                // todo : dismiss dialog
+                            }
+                        });
+            }
+        });
+
+        btn_favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isChecked) {
+                    btn_favorite.setImageDrawable(getResources().getDrawable(R.drawable.star_unchecked));
+                    isChecked = false;
+                } else {
+                    GeneralUtils.showAlertDialog(getContext(),
+                            getContext().getString(R.string.title_note_tdvb),
+                            getContext().getString(R.string.description_note_tdvb),
+                            new AlertDialogFragment.AlertDialogListener() {
+                                @Override
+                                public void onPositiveButton() {
+                                    // todo : call WS SEND NOTE
+                                    try {
+                                        mHost.serviceManager.putFavorite(mHost.id, Session.get().getSessionToken().getToken(), new Subscriber<Response<FavoritesResponse>>() {
+                                            @Override
+                                            public void onCompleted() {
+                                                // todo: progress dialog
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+
+                                            }
+
+                                            @Override
+                                            public void onNext(Response<FavoritesResponse> response) {
+                                                if (response.isSuccessful()) {
+                                                    // todo : show toast or dialog that favorite has been added
+                                                    btn_favorite.setImageDrawable(getResources().getDrawable(R.drawable.star_checked));
+                                                }
+                                            }
+                                        });
+                                    } catch (ServiceException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onNegativeButton() {
+                                    // todo : dismiss dialog
+                                }
+                            });
+                    isChecked = true;
+                }
+            }
+        });
+
+        btn_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "I saw this serie tv on tdvb.com, i think you should try it : " + mHost.serie.getSeriesName();
+                String shareSub = "Hey i want share this serie with you !";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share this serie"));
+
             }
         });
     }
